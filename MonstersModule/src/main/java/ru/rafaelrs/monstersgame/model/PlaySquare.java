@@ -4,17 +4,24 @@ import android.support.v7.appcompat.R;
 
 public final class PlaySquare {
 
-    private boolean occupied;
+    private MonsterUnit monsterUnit;
 
     public PlaySquare() {
-        this.occupied = true;
+        monsterUnit = null;
     }
 
-    public PlaySquare(boolean occupied) {
-        this.occupied = occupied;
+    public PlaySquare(PlaySquare ps) {
+        monsterUnit = ps.monsterUnit;
     }
 
-    public boolean getOccupancy() { return occupied; }
-    public void setOccupancy(boolean occupied) { this.occupied = occupied; }
+    public PlaySquare(MonsterUnit monsterUnit) {
+        this.monsterUnit = monsterUnit;
+    }
 
+    public void fillSquareData(PlaySquare ps) {
+        monsterUnit = ps.monsterUnit;
+    }
+
+    public MonsterUnit getMonsterUnit() { return monsterUnit; }
+    public void setMonsterUnit(MonsterUnit monsterUnit) { this.monsterUnit = monsterUnit; }
 }
