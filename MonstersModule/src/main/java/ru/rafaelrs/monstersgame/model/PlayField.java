@@ -24,7 +24,7 @@ public class PlayField {
     private PlaySquare[] squares;
     private int width, height;
     private LinkedList<MonsterUnit> monstersOnField = new LinkedList<MonsterUnit>();
-    private boolean monstersThreadActive = false;
+    private int gameLevel;
 
     private FieldChangeListener FieldChangeListener;
     private OnGameOverListener OnGameOverListener;
@@ -60,7 +60,11 @@ public class PlayField {
         }
     }
 
-    public void generateMonsters(int gameLevel) {
+    public void setGameLevel(int level) {
+        gameLevel = level;
+    }
+
+    public void generateMonsters() {
         Random randInt = new Random();
         for (int i = 0; i < (int)(gameLevel * 1.5 + 5); i++) {
             boolean placeFounded = false;

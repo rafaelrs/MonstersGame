@@ -6,6 +6,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.widget.TextView;
 
 import ru.rafaelrs.monstersgame.model.PlayField;
 import ru.rafaelrs.monstersgame.model.PlaySquare;
@@ -41,23 +43,25 @@ public class GameActivity extends Activity implements PlayField.OnGameOverListen
     /** Called when the activity is first created. */
     private PlayField fieldModel;
     private MonstersView monstersView;
-    private int currentLevel = 1;
-    private int playerScore = 0;
+    public int currentLevel = 1;
+    public int playerScore = 0;
+    private long levelStartTime;
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
 
         // install the view
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.main);
 
-        InitGame();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
+        InitGame();
     }
 
     @Override
@@ -86,6 +90,12 @@ public class GameActivity extends Activity implements PlayField.OnGameOverListen
 
     private void InitGame() {
 
+        if (currentLevel % 2 == 0) {
+            findViewById(R.id.root).setBackgroundResource(R.drawable.background2);
+        } else {
+            findViewById(R.id.root).setBackgroundResource(R.drawable.background1);
+        }
+
         // measure optimal field size
         float displayWidth = getResources().getDisplayMetrics().widthPixels / getResources().getDisplayMetrics().xdpi;
         float displayHeight = getResources().getDisplayMetrics().heightPixels / getResources().getDisplayMetrics().ydpi;
@@ -94,9 +104,9 @@ public class GameActivity extends Activity implements PlayField.OnGameOverListen
 
         // creating field
         fieldModel = new PlayField(fieldXSize, fieldYSize);
-        fieldModel.generateMonsters(currentLevel);
+        fieldModel.setGameLevel(currentLevel);
+        fieldModel.generateMonsters();
         fieldModel.setOnGameOverListener(this);
-        setTitle("Monsters - Level " + currentLevel + ", score: " + playerScore);
 
         // setting created play field as data source for game view
         monstersView = (MonstersView) findViewById(R.id.playfield);
@@ -105,6 +115,11 @@ public class GameActivity extends Activity implements PlayField.OnGameOverListen
         monstersView.setOnTouchListener(new TrackTouchListener(fieldModel, monstersView));
 
         fieldModel.startMonsters();
+        levelStartTime = (int) System.currentTimeMillis();
+        TextView levelView = (TextView) findViewById(R.id.current_level);
+        levelView.setText("" + currentLevel);
+        TextView scoreView = (TextView) findViewById(R.id.game_score);
+        scoreView.setText("" + playerScore);
 
     }
 

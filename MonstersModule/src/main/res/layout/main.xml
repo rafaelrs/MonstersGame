@@ -2,19 +2,71 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/root"
     android:orientation="vertical"
-    android:gravity="center_horizontal"
-    android:background="@color/lt_grey"
-    android:layout_width="match_parent"
+    android:background="@drawable/background1"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:baselineAligned="false">
+    android:clickable="false"
+    android:padding="15dp">
 
-  <ru.rafaelrs.monstersgame.view.MonstersView
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/game_title"
+        android:adjustViewBounds="true"
+        android:contentDescription="Dexterous monsters"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp"
+        android:layout_gravity="center|bottom">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/level_title"
+            android:adjustViewBounds="true"
+            android:maxHeight="12pt"
+            android:layout_gravity="bottom" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:id="@+id/current_level"
+            android:paddingLeft="5pt"
+            android:paddingRight="5pt"
+            android:textStyle="bold"
+            android:textColor="#01ff89"
+            android:layout_gravity="bottom"
+            android:textSize="8pt" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/score_title"
+            android:adjustViewBounds="true"
+            android:maxHeight="12pt"
+            android:baselineAlignBottom="false"
+            android:layout_gravity="bottom" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:id="@+id/game_score"
+            android:paddingLeft="5pt"
+            android:layout_gravity="bottom"
+            android:textStyle="bold"
+            android:textColor="#ffc000"
+            android:textSize="8pt" />
+    </LinearLayout>
+
+    <ru.rafaelrs.monstersgame.view.MonstersView
         android:id="@+id/playfield"
         android:focusableInTouchMode="true"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@color/white"
-        />
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"/>
 
 </LinearLayout>
