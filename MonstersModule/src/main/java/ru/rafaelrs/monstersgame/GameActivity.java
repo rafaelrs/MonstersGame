@@ -1,6 +1,9 @@
 package ru.rafaelrs.monstersgame;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,7 +18,7 @@ import ru.rafaelrs.monstersgame.view.MonstersView;
 
 public class GameActivity extends Activity implements PlayField.OnGameOverListener  {
 
-    private static class TrackTouchListener implements MonstersView.OnTouchListener {
+    private class TrackTouchListener implements MonstersView.OnTouchListener {
         private final PlayField mPlayField;
         private final MonstersView mView;
 
@@ -33,6 +36,8 @@ public class GameActivity extends Activity implements PlayField.OnGameOverListen
                     int squarey = mView.getYFieldPosition(event.getY());
                     PlaySquare square = mPlayField.getFieldSquareData(squarex, squarey);
                     if (square.getMonsterUnit() == null || !square.getMonsterUnit().isVulnerable()) break;
+                    GameActivity.this.monstersScore = (int)(GameActivity.this.monstersScore + 100 * GameActivity.this.measureScoreMultiplier());
+                    GameActivity.this.publishGameState();
                     mPlayField.destroyMonster(squarex, squarey);
                     break;
             }
@@ -44,7 +49,7 @@ public class GameActivity extends Activity implements PlayField.OnGameOverListen
     private PlayField fieldModel;
     private MonstersView monstersView;
     public int currentLevel = 1;
-    public int playerScore = 0;
+    public int playerScore = 0, monstersScore = 0;
     private long levelStartTime;
 
     @Override public void onCreate(Bundle state) {
@@ -115,16 +120,36 @@ public class GameActivity extends Activity implements PlayField.OnGameOverListen
         monstersView.setOnTouchListener(new TrackTouchListener(fieldModel, monstersView));
 
         fieldModel.startMonsters();
-        levelStartTime = (int) System.currentTimeMillis();
+        levelStartTime = System.currentTimeMillis();
+        monstersScore = 0;
+        publishGameState();
+    }
+
+    public void publishGameState() {
         TextView levelView = (TextView) findViewById(R.id.current_level);
         levelView.setText("" + currentLevel);
         TextView scoreView = (TextView) findViewById(R.id.game_score);
-        scoreView.setText("" + playerScore);
+        int summaryScore = playerScore + monstersScore;
+        scoreView.setText("" + summaryScore);
+    }
 
+    public float measureScoreMultiplier() {
+        float timeMultiplier = (((5 + (float)currentLevel) * 10000) / (1 + System.currentTimeMillis() - levelStartTime)) / 20; // On more level more time starting from 60 seconds
+        float levelMultiplier = ((5 + (float)currentLevel) / 5); // On more level more score starting from 1.2
+        return timeMultiplier * levelMultiplier;
+    }
+
+    private void showMessage(String title, String msg) {
+        Intent descriptionIntent = new Intent(this, MessageActivity.class);
+        descriptionIntent.putExtra(MessageActivity.KEY_TITLE, title);
+        descriptionIntent.putExtra(MessageActivity.KEY_MESSAGE, msg);
+        startActivity(descriptionIntent);
     }
 
     @Override
     public void onGameOver() {
+        int levelBonus = (int)(1000 * GameActivity.this.measureScoreMultiplier());
+        playerScore = playerScore + levelBonus + monstersScore;
         currentLevel++;
         InitGame();
     }
