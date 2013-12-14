@@ -4,16 +4,11 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
 
-import ru.rafaelrs.monstersgame.GameActivity;
 import ru.rafaelrs.monstersgame.R;
 import ru.rafaelrs.monstersgame.model.PlayField;
 import ru.rafaelrs.monstersgame.model.PlaySquare;
@@ -110,23 +105,8 @@ public class MonstersView extends View implements PlayField.FieldChangeListener 
     @Override protected void onDraw(Canvas canvas) {
 
         Paint paint = new Paint();
-        /*paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.WHITE);
-        canvas.drawRoundRect(new RectF(0, 0, getWidth() - 1, getHeight() - 1), 20, 20, paint);*/
 
         if (null == playField) { return; }
-
-        /*paint.setColor(Color.BLACK);
-        Paint cellPaint = new Paint(paint);
-        cellPaint.setColor(Color.argb(255, 220, 220, 220));
-        for (int y = 1; y < playField.getHeight(); y++) {
-            canvas.drawLine(5, y * squareHeight, getWidth() - 6, y * squareHeight, paint);
-            canvas.drawLine(5, y * squareHeight + 1, getWidth() - 6, y * squareHeight + 1, cellPaint);
-        }
-        for (int x = 1; x < playField.getWidth(); x++) {
-            canvas.drawLine(x * squareWidth, 5, x * squareWidth, getHeight() - 6, paint);
-            canvas.drawLine(x * squareWidth + 1, 5, x * squareWidth + 1, getHeight() - 6, cellPaint);
-        }*/
 
         Paint cellPaint = new Paint(paint);
         cellPaint.setAlpha(76);

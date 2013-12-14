@@ -1,12 +1,9 @@
 package ru.rafaelrs.monstersgame.model;
 
-import android.os.AsyncTask;
 import android.os.Handler;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
-import java.util.concurrent.Semaphore;
 
 public class PlayField {
 
@@ -24,7 +21,7 @@ public class PlayField {
     private PlaySquare[] squares;
     private int width, height;
     public LinkedList<MonsterUnit> monstersOnField = new LinkedList<MonsterUnit>();
-    private int gameLevel;
+    public int gameLevel;
 
     private FieldChangeListener FieldChangeListener;
     private OnGameOverListener OnGameOverListener;
@@ -88,10 +85,15 @@ public class PlayField {
         syncPlayField();
     }
 
+    public void fieldClear() {
+        monstersOnField.clear();
+    }
+
     public void destroyMonster(int x, int y) {
         synchronized (monstersOnField) {
             PlaySquare square = getFieldSquare(x, y);
             monstersOnField.remove(square.getMonsterUnit());
+            notifyListener(x, y);
             syncPlayField();
         }
 
@@ -100,83 +102,6 @@ public class PlayField {
             OnGameOverListener.onGameOver();
         }
     }
-
-    /*
-    private MonstersLive monstersLiveThread;
-
-    public void startMonsters() {
-        monstersLiveThread = new MonstersLive();
-        monstersLiveThread.execute(monstersOnField);
-    }
-
-    public void stopMonsters() {
-        monstersLiveThread.cancel(true);
-    }
-
-    // Monsters lives here :)
-    private class MonstersLive extends AsyncTask<LinkedList<MonsterUnit>, MonsterUnit, Void> {
-
-        public boolean finished = false;
-
-        protected Void doInBackground(LinkedList<MonsterUnit>... params) {
-            if (params.length <= 0) return null;
-
-            LinkedList<MonsterUnit> monstersList = params[0];
-            Random randInt = new Random();
-
-            while (!isCancelled()) {
-                for (int i = 0; i < 5;  i++) {
-                    try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                    synchronized (monstersList) {
-                        for (MonsterUnit mu : monstersList) {
-
-                            if (i == 4) {
-                                class Directions { public int x, y; Directions(int x, int y) { this.x = x; this.y = y; }}
-                                Directions[] directions = {
-                                        new Directions(-1, -1), new Directions(0, -1), new Directions(1, -1),
-                                        new Directions(-1, 0),                         new Directions(1,  0),
-                                        new Directions(-1, 1),  new Directions(0, 1),  new Directions(1, 1)
-                                };
-                                ArrayList<Directions> availDirections = new ArrayList<Directions>();
-                                for (Directions dir : directions) {
-                                    int x = mu.getX() + dir.x;
-                                    int y = mu.getY() + dir.y;
-                                    if (x >= 0 && y >=0 && x < getWidth() && y < getHeight() && getFieldSquare(x, y).getMonsterUnit() == null) {
-                                        availDirections.add(dir);
-                                    }
-                                }
-                                availDirections.add(new Directions(0, 0));
-                                Directions generatedDir = availDirections.get(randInt.nextInt(availDirections.size() - 1));
-                                mu.moveMonster(mu.getX() + generatedDir.x, mu.getY() + generatedDir.y);
-                            }
-
-                            int generatedVulnerable = randInt.nextInt(99);
-                            if (generatedVulnerable < 70) { mu.setVulnerable(true); } else { mu.setVulnerable(false); }
-                            publishProgress(mu);
-
-                        }
-                    }
-                }
-            }
-            finished = true;
-            return null;
-        }
-
-
-        @Override
-        protected void onProgressUpdate(MonsterUnit... mu) {
-            super.onProgressUpdate(mu);
-            syncPlayField();
-            notifyListener(mu[0].getX(), mu[0].getY());
-            notifyListener(mu[0].getShadowX(), mu[0].getShadowY());
-        }
-    }
-    */
 
     public int getWidth() { return width; }
     public int getHeight() { return height; }

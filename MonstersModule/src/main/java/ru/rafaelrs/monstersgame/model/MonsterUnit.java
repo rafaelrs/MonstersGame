@@ -1,20 +1,17 @@
 package ru.rafaelrs.monstersgame.model;
 
-import android.content.Context;
-import android.support.v7.appcompat.R;
-
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.concurrent.Semaphore;
 
 /**
  * Created by 1111 on 10.12.13.
  */
-public class MonsterUnit extends Thread implements Runnable {
+public class MonsterUnit extends Thread {
     private boolean vulnerable;
     private int xpos, ypos;
     private int xshadow, yshadow;
     private PlayField pobject;
+    private boolean isDestroyed;
 
     public MonsterUnit(int x, int y, boolean vulnerable, PlayField pobject) {
         this.vulnerable = vulnerable;
@@ -23,6 +20,7 @@ public class MonsterUnit extends Thread implements Runnable {
         xshadow = -1;
         yshadow = -1;
         this.pobject = pobject;
+        isDestroyed = false;
     }
 
     public boolean isVulnerable() { return vulnerable; };
@@ -39,13 +37,19 @@ public class MonsterUnit extends Thread implements Runnable {
         ypos = newy;
     }
 
+    public void destroyMonster() {
+        isDestroyed = true;
+    }
+
     @Override
     public void run() {
         Random randInt = new Random();
-        while (true) {
+        int switchPeriod = randInt.nextInt(50) - 25;
+
+        while (pobject.monstersOnField.indexOf(this) != -1) {
             for (int i = 0; i < 5;  i++) {
                 try {
-                    Thread.sleep(200);
+                    Thread.sleep(200 + switchPeriod);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -68,12 +72,17 @@ public class MonsterUnit extends Thread implements Runnable {
                             }
                         }
                         availDirections.add(new Directions(0, 0));
-                        Directions generatedDir = availDirections.get(randInt.nextInt(availDirections.size() - 1));
-                        moveMonster(getX() + generatedDir.x, getY() + generatedDir.y);
+
+                        if (availDirections.size() > 1) {
+                            Directions generatedDir = availDirections.get(randInt.nextInt(availDirections.size() - 1));
+                            moveMonster(getX() + generatedDir.x, getY() + generatedDir.y);
+                        }
                     }
 
-                    int generatedVulnerable = randInt.nextInt(99);
-                    if (generatedVulnerable < 70) { setVulnerable(true); } else { setVulnerable(false); }
+                    if (i == 1) {
+                        int generatedVulnerable = randInt.nextInt(99);
+                        if (generatedVulnerable < (100 - pobject.gameLevel * 3)) { setVulnerable(true); } else { setVulnerable(false); }
+                    }
                     pobject.fieldHandler.post(new Runnable() {
                         @Override
                         public void run() {

@@ -1,7 +1,5 @@
 package ru.rafaelrs.monstersgame.model;
 
-import android.support.v7.appcompat.R;
-
 public final class PlaySquare {
 
     private MonsterUnit monsterUnit;

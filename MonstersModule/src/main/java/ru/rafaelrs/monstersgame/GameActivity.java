@@ -1,9 +1,8 @@
 package ru.rafaelrs.monstersgame;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,6 +38,8 @@ public class GameActivity extends Activity implements PlayField.OnGameOverListen
                     GameActivity.this.monstersScore = (int)(GameActivity.this.monstersScore + 100 * GameActivity.this.measureScoreMultiplier());
                     GameActivity.this.publishGameState();
                     mPlayField.destroyMonster(squarex, squarey);
+                    MediaPlayer mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.destroy);
+                    mediaPlayer.start();
                     break;
             }
             return false;
@@ -84,9 +85,9 @@ public class GameActivity extends Activity implements PlayField.OnGameOverListen
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.menu_NewGame) {
-            //fieldModel.stopMonsters();
             currentLevel = 1;
             playerScore = 0;
+            fieldModel.fieldClear();
             InitGame();
             return true;
         }
@@ -119,7 +120,6 @@ public class GameActivity extends Activity implements PlayField.OnGameOverListen
 
         monstersView.setOnTouchListener(new TrackTouchListener(fieldModel, monstersView));
 
-        //fieldModel.startMonsters();
         levelStartTime = System.currentTimeMillis();
         monstersScore = 0;
         publishGameState();
