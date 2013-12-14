@@ -2,20 +2,24 @@ package ru.rafaelrs.monstersgame.model;
 
 import android.support.v7.appcompat.R;
 
+import java.util.concurrent.Semaphore;
+
 /**
  * Created by 1111 on 10.12.13.
  */
-public class MonsterUnit {
+public class MonsterUnit implements Runnable {
     private boolean vulnerable;
     private int xpos, ypos;
     private int xshadow, yshadow;
+    private Semaphore mSemaphore;
 
-    public MonsterUnit(int x, int y, boolean vulnerable) {
+    public MonsterUnit(int x, int y, boolean vulnerable, Semaphore semaphore) {
         this.vulnerable = vulnerable;
         xpos = x;
         ypos = y;
         xshadow = -1;
         yshadow = -1;
+        mSemaphore = semaphore;
     }
 
     public boolean isVulnerable() { return vulnerable; };
@@ -30,5 +34,10 @@ public class MonsterUnit {
         yshadow = ypos;
         xpos = newx;
         ypos = newy;
+    }
+
+    @Override
+    public void run() {
+
     }
 }
