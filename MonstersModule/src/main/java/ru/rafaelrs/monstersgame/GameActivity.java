@@ -37,9 +37,16 @@ public class GameActivity extends Activity implements PlayField.OnGameOverListen
                     if (square.getMonsterUnit() == null || !square.getMonsterUnit().isVulnerable()) break;
                     GameActivity.this.monstersScore = (int)(GameActivity.this.monstersScore + 100 * GameActivity.this.measureScoreMultiplier());
                     GameActivity.this.publishGameState();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            MediaPlayer mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.destroy);
+                            mediaPlayer.start();
+                            while (mediaPlayer.isPlaying());
+                            mediaPlayer.release();
+                        }
+                    }).start();
                     mPlayField.destroyMonster(squarex, squarey);
-                    MediaPlayer mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.destroy);
-                    mediaPlayer.start();
                     break;
             }
             return false;
@@ -61,14 +68,16 @@ public class GameActivity extends Activity implements PlayField.OnGameOverListen
         //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.main);
 
+        InitGame();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        InitGame();
-    }
+     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

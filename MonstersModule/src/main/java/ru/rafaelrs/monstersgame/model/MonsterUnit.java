@@ -44,7 +44,7 @@ public class MonsterUnit extends Thread {
     @Override
     public void run() {
         Random randInt = new Random();
-        int switchPeriod = randInt.nextInt(50) - 25;
+        int switchPeriod = randInt.nextInt(100) - 50;
 
         while (pobject.monstersOnField.indexOf(this) != -1) {
             for (int i = 0; i < 5;  i++) {
