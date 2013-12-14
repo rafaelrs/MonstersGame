@@ -79,13 +79,6 @@ public class MonstersView extends View implements PlayField.FieldChangeListener 
 
         Rect rectToModify = new Rect(rectLeft, rectTop, rectRight, rectBottom);
         invalidate(rectToModify);
-
-        /*this.post(new Runnable() {
-            @Override
-            public void run() {
-                invalidate();
-            }
-        });*/
     }
 
     @Override

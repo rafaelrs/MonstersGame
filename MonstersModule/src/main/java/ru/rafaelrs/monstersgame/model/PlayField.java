@@ -1,13 +1,12 @@
 package ru.rafaelrs.monstersgame.model;
 
 import android.os.AsyncTask;
+import android.os.Handler;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.concurrent.Semaphore;
-
-import ru.rafaelrs.monstersgame.GameActivity;
 
 public class PlayField {
 
@@ -24,13 +23,13 @@ public class PlayField {
 
     private PlaySquare[] squares;
     private int width, height;
-    private LinkedList<MonsterUnit> monstersOnField = new LinkedList<MonsterUnit>();
+    public LinkedList<MonsterUnit> monstersOnField = new LinkedList<MonsterUnit>();
     private int gameLevel;
 
     private FieldChangeListener FieldChangeListener;
     private OnGameOverListener OnGameOverListener;
 
-    private Semaphore mSemaphore = new Semaphore(1);
+    final Handler fieldHandler = new Handler();
 
     public PlayField(int fwidth, int fheight) {
         width = fwidth;
@@ -39,7 +38,7 @@ public class PlayField {
         syncPlayField();
     }
 
-    private void syncPlayField() {
+    public void syncPlayField() {
         for (int y = 0; y < getHeight(); y++) {
             for (int x = 0; x < getWidth(); x++) {
                 PlaySquare square = getFieldSquare(x, y);
@@ -78,8 +77,9 @@ public class PlayField {
                 PlaySquare square = getFieldSquare(x, y);
                 if (square.getMonsterUnit() != null) continue;
 
-                MonsterUnit newMonster = new MonsterUnit(x,y, true, mSemaphore);
+                MonsterUnit newMonster = new MonsterUnit(x,y, true, this);
                 monstersOnField.add(newMonster);
+                newMonster.start();
                 square.setMonsterUnit(newMonster);
                 notifyListener(x, y);
                 break;
@@ -96,11 +96,12 @@ public class PlayField {
         }
 
         if (monstersOnField.isEmpty()) {
-            stopMonsters();
+            //stopMonsters();
             OnGameOverListener.onGameOver();
         }
     }
 
+    /*
     private MonstersLive monstersLiveThread;
 
     public void startMonsters() {
@@ -157,6 +158,7 @@ public class PlayField {
                             int generatedVulnerable = randInt.nextInt(99);
                             if (generatedVulnerable < 70) { mu.setVulnerable(true); } else { mu.setVulnerable(false); }
                             publishProgress(mu);
+
                         }
                     }
                 }
@@ -164,6 +166,7 @@ public class PlayField {
             finished = true;
             return null;
         }
+
 
         @Override
         protected void onProgressUpdate(MonsterUnit... mu) {
@@ -173,51 +176,8 @@ public class PlayField {
             notifyListener(mu[0].getShadowX(), mu[0].getShadowY());
         }
     }
+    */
 
-
-/*    Thread monstersLiveThread = new Thread(this);
-
-    public void startMonsters() {
-        monstersThreadActive = true;
-        monstersLiveThread.start();
-    }
-
-    @Override
-    public void run() {
-        Random randInt = new Random();
-        while (monstersThreadActive) {
-            try {
-                Thread.sleep(700);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            for (MonsterUnit mu : monstersOnField) {
-                class Directions { public int x, y; Directions(int x, int y) { this.x = x; this.y = y; }}
-                Directions[] directions = {
-                        new Directions(-1, -1), new Directions(0, -1), new Directions(1, -1),
-                        new Directions(-1, 0),                         new Directions(1,  0),
-                        new Directions(-1, 1),  new Directions(0, 1),  new Directions(1, 1)
-                };
-                ArrayList<Directions> availDirections = new ArrayList<Directions>();
-                for (Directions dir : directions) {
-                    int x = mu.getX() + dir.x;
-                    int y = mu.getY() + dir.y;
-                    if (x >= 0 && y >=0 && x < getWidth() && y < getHeight() && getFieldSquare(x, y).getMonsterUnit() == null) {
-                        availDirections.add(dir);
-                    }
-                }
-                availDirections.add(new Directions(0, 0));
-                Directions generatedDir = availDirections.get(randInt.nextInt(availDirections.size() - 1));
-                mu.moveMonster(mu.getX() + generatedDir.x, mu.getY() + generatedDir.y);
-
-                int generatedVulnerable = randInt.nextInt(99);
-                if (generatedVulnerable < 70) { mu.setVulnerable(true); } else { mu.setVulnerable(false); }
-                syncPlayField();
-                notifyListener(mu.getX(), mu.getY());
-            }
-        }
-    }
-*/
     public int getWidth() { return width; }
     public int getHeight() { return height; }
 
@@ -256,7 +216,7 @@ public class PlayField {
         return squares;
     }
 
-    private void notifyListener(int x, int y) {
+    public void notifyListener(int x, int y) {
         if (null != FieldChangeListener) {
             FieldChangeListener.onFieldChange(x, y);
         }

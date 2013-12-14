@@ -84,7 +84,7 @@ public class GameActivity extends Activity implements PlayField.OnGameOverListen
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.menu_NewGame) {
-            fieldModel.stopMonsters();
+            //fieldModel.stopMonsters();
             currentLevel = 1;
             playerScore = 0;
             InitGame();
@@ -119,7 +119,7 @@ public class GameActivity extends Activity implements PlayField.OnGameOverListen
 
         monstersView.setOnTouchListener(new TrackTouchListener(fieldModel, monstersView));
 
-        fieldModel.startMonsters();
+        //fieldModel.startMonsters();
         levelStartTime = System.currentTimeMillis();
         monstersScore = 0;
         publishGameState();
